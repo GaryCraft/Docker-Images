@@ -9,8 +9,8 @@ LABEL Author="GaryCraft@SpaceProject, <garycraft@our-space.xyz>"
 
 RUN apk add --update nodejs npm
 
-RUN apk add --no-cache --update curl ca-certificates openssl git tar bash \
-    && adduser --disabled-password --home /home/container container
+RUN apk add --no-cache --update curl ca-certificates openssl git tar bash 
+RUN adduser -D -h /home/container container
 
 RUN node -v && npm -v
 
