@@ -7,9 +7,11 @@ FROM alpine:3.14.1
 
 LABEL Author="GaryCraft@SpaceProject, <garycraft@our-space.xyz>"
 
-RUN apk add --update nodejs
+RUN apk add --update nodejs npm
 
 RUN adduser --disabled-password --home /home/container container
+
+RUN node -v && npm -v
 
 USER container
 ENV  USER=container HOME=/home/container
