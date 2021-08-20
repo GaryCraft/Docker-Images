@@ -1,0 +1,21 @@
+# ----------------------------------
+# Pterodactyl ARM nodejs Dockerfile
+# Environment: Alpine Linux 3.14.1
+# Minimum Panel Version: 1.0.0
+# ----------------------------------
+FROM alpine:3.14.1
+
+LABEL Author="GaryCraft@SpaceProject, <garycraft@our-space.xyz>"
+
+RUN apk add --update nodejs
+
+RUN adduser --disabled-password --home /home/container container
+
+USER container
+ENV  USER=container HOME=/home/container
+
+WORKDIR /home/container
+
+COPY ./entrypoint.sh /entrypoint.sh
+
+CMD ["/bin/sh", "/entrypoint.sh"]
