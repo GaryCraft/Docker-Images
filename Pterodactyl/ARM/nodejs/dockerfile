@@ -10,15 +10,20 @@ LABEL Author="GaryCraft@SpaceProject, <garycraft@our-space.xyz>"
 RUN apk add --update nodejs npm
 
 RUN apk add --no-cache --update curl ca-certificates openssl git tar bash 
+
 RUN adduser -D -h /home/container container
 
 RUN node -v && npm -v
+
+COPY ./entrypoint.sh /entrypoint.sh
+
+RUN chmod +x entrypoint.sh
 
 USER container
 ENV  USER=container HOME=/home/container
 
 WORKDIR /home/container
 
-COPY ./entrypoint.sh /entrypoint.sh
+
 
 CMD ["/bin/sh", "/entrypoint.sh"]
