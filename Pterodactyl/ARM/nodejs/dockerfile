@@ -80,7 +80,7 @@ RUN addgroup -g 1000 node \
   && node --version \
   && npm --version
 
-RUN apk add --no-cache --update curl ca-certificates openssl git tar bash python3 && ln -sf python3 /usr/bin/pytho
+RUN apk add --no-cache --update curl ca-certificates openssl git tar bash python3 make=4.3-r0 && ln -sf python3 /usr/bin/pytho
 
 RUN adduser -D -h /home/container container
 
