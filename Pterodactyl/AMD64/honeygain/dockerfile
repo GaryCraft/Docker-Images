@@ -1,0 +1,23 @@
+# ----------------------------------
+# Pterodactyl AMD64 HoneyGain Dockerfile
+# Environment: HoneyGain
+# Minimum Panel Version: 1.0.0
+# ----------------------------------
+FROM honeygain/honeygain:latest
+
+LABEL maintainer="GaryCraft@SpaceProject, <garycraft@our-space.xyz>"
+
+CMD ["bash"]
+
+USER root
+RUN chmod 777 /app
+RUN ls /app
+
+RUN adduser --disabled-password --gecos "" --home /home/container container
+ENV USER=container HOME=/home/container LD_LIBRARY_PATH=/usr/lib
+USER container
+WORKDIR /home/container
+
+COPY ./entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
