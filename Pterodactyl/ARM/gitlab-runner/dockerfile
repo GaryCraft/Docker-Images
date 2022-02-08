@@ -1,0 +1,21 @@
+# ----------------------------------
+# Pterodactyl ARM nodejs Dockerfile
+# Environment: Alpine Linux 3.14.1
+# Minimum Panel Version: 1.0.0
+# ----------------------------------
+FROM alpine:3.14.1
+
+RUN adduser -D -h /home/container container
+
+COPY ./entrypoint.sh /entrypoint.sh
+
+RUN chmod +x entrypoint.sh
+
+USER container
+ENV  USER=container HOME=/home/container
+
+WORKDIR /home/container
+
+
+
+CMD ["/bin/bash", "/entrypoint.sh"]

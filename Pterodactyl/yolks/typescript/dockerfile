@@ -1,0 +1,17 @@
+# ----------------------
+#
+#	GaryCraft - TypeScript
+#
+# ----------------------
+
+FROM ghcr.io/parkervcp/yolks:nodejs_17
+
+LABEL author="GaryCraft" maintainer="garycraft@our-space.xyz"
+
+USER container
+ENV USER=container HOME=/home/container
+WORKDIR /home/container
+
+COPY ./entrypoint.sh /entrypoint.sh
+
+CMD ["bin/bash", "/entrypoint.sh"]
