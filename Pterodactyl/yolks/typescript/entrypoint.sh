@@ -29,7 +29,7 @@ fi
 
 if [ -f /home/container/package.json ]; then
   echo "Installing node_modules"
-  npm ci
+  npm install
   echo "Installed node_modules"
 fi
 
