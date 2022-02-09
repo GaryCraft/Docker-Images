@@ -24,7 +24,7 @@ if [ ! -d "/home/container/.git" ]; then
   git clone ${GIT_ADDRESS} /home/container
 else
   echo "Updating repository..."
-  git pull
+  git pull && rm -rf ./dist
 fi
 
 if [ -f /home/container/package.json ]; then
