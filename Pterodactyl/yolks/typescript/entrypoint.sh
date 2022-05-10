@@ -20,8 +20,8 @@ else
 fi
 
 if [ ! -d "/home/container/.git" ]; then
-  echo "Cloning repository..."
-  git clone ${GIT_ADDRESS} /home/container
+  echo "Repository Missing"
+  exit 1
 else
   echo "Updating repository..."
   git pull && rm -rf ./dist
