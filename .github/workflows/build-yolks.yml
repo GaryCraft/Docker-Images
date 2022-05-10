@@ -14,6 +14,7 @@ jobs:
       matrix:
         tag:
           - typescript
+          - nodejs_17
     steps:
       - uses: actions/checkout@v2
       # Setup QEMU for ARM64 Build
