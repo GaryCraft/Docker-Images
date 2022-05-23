@@ -39,6 +39,14 @@ if [ ! -d /home/container/dist ]; then
   echo "Built application"
 fi
 
+#Splitting {{_ENV_STRING}}
+line="${_ENV_STRING}"
+arr=($line)
+for i in "${arr[@]}"
+do
+	export $i
+done
+
 # Replace Startup Variables
 MODIFIED_STARTUP=$(echo -e ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g')
 echo ":/home/container$ ${MODIFIED_STARTUP}"
