@@ -33,12 +33,6 @@ if [ -f /home/container/package.json ]; then
   echo "Installed node_modules"
 fi
 
-if [ ! -d /home/container/dist ]; then
-  echo "Building application"
-  npm run build
-  echo "Built application"
-fi
-
 #Splitting {{_ENV_STRING}}
 line="${_ENV_STRING}"
 arr=($line)
@@ -47,6 +41,14 @@ do
   echo "Exporting Variable $i"
 	export $i
 done
+
+if [ ! -d /home/container/dist ]; then
+  echo "Building application"
+  npm run build
+  echo "Built application"
+fi
+
+
 
 # Replace Startup Variables
 MODIFIED_STARTUP=$(echo -e ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g')
