@@ -44,6 +44,7 @@ line="${_ENV_STRING}"
 arr=($line)
 for i in "${arr[@]}"
 do
+  echo "Exporting Variable $i"
 	export $i
 done
 
