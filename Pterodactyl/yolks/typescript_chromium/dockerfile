@@ -1,0 +1,22 @@
+# ----------------------
+#
+#	GaryCraft - TypeScript + Chromium
+#
+# ----------------------
+
+FROM ghcr.io/garycraft/yolks:typescript
+
+LABEL author="GaryCraft" maintainer="garycraft@our-space.xyz"
+
+RUN apt update && apt -y install chromium 
+
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+
+USER container
+ENV USER=container HOME=/home/container
+WORKDIR /home/container
+
+COPY ../typescript/entrypoint.sh /entrypoint.sh
+
+CMD ["/bin/bash", "/entrypoint.sh"]
