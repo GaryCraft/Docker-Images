@@ -8,14 +8,15 @@ FROM ghcr.io/garycraft/yolks:typescript
 
 LABEL author="GaryCraft" maintainer="garycraft@our-space.xyz"
 
+USER root
 RUN apt update && apt -y install chromium 
-
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
 USER container
 ENV USER=container HOME=/home/container
 WORKDIR /home/container
+
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
 COPY ./entrypoint.sh /entrypoint.sh
 
