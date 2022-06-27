@@ -12,6 +12,9 @@ jobs:
         tag:
           - typescript
           - nodejs_17
+          - typescript_canvas
+          - typescript_chromium
+          - dotnet_6
     steps:
       - uses: actions/checkout@v2
       # Setup QEMU for ARM64 Build
