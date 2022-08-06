@@ -1,0 +1,23 @@
+# ----------------------
+#
+#	Redis - 6 + RediSearch
+#
+# ----------------------
+FROM    ghcr.io/parkervcp/yolks:redis_6
+
+LABEL   author="GaryCraft" maintainer="garycraft@our-space.xyz"
+
+USER    root
+
+ENV     DEBIAN_FRONTEND noninteractive
+
+RUN     apt -y update && \
+        apt -y upgrade && \
+        apt -y install redis-redisearch
+
+USER    container
+ENV     USER=container HOME=/home/container
+WORKDIR /home/container
+
+COPY    ./entrypoint.sh /entrypoint.sh
+CMD     ["/bin/bash", "/entrypoint.sh"]
