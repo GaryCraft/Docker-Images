@@ -4,7 +4,10 @@ on:
     inputs:
       image:
         description: 'Image to build'
-        default: ''
+        type: choice
+        options:
+          - "boringproxy"
+          - "frp"
         required: true
 jobs:
   build:
