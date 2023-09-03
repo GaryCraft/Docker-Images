@@ -1,4 +1,4 @@
-name: build and push
+name: Build All Yolks
 
 on:
   workflow_dispatch:

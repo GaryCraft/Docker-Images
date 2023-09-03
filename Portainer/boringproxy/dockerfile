@@ -1,0 +1,38 @@
+# ----------------------
+#
+#	SpaceProject - BoringProxy
+#
+# ----------------------
+
+FROM --platform=$TARGETOS/$TARGETARCH golang:1.17-alpine3.15 as builder
+
+LABEL author="GaryC" maintainer="garycraft@our-space.xyz"
+
+RUN apk add --no-cache git
+
+WORKDIR /build
+
+# Get the boringproxy source code
+RUN git clone https://github.com/boringproxy/boringproxy
+
+# And Build it
+RUN cd boringproxy && \
+	go mod download && \
+	cd cmd/boringproxy && CGO_ENABLED=0 \
+	go build -o boringproxy
+
+FROM --platform=$TARGETOS/$TARGETARCH alpine:3.15 as runner
+
+LABEL author="GaryC" maintainer="garycraft@our-space.xyz"
+
+WORKDIR /storage
+
+COPY --from=builder /build/boringproxy/cmd/boringproxy/boringproxy /
+
+RUN chmod +x /boringproxy
+
+RUN apk add --no-cache ca-certificates
+
+ENTRYPOINT [ "/boringproxy" ]
+
+CMD ["version"]

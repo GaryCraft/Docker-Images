@@ -1,16 +1,14 @@
-name: Build Yolk manually
-
-
+name: Build Portainer image manually
 on:
   workflow_dispatch:
     inputs:
       image:
-        description: 'Yolk to build'
+        description: 'Image to build'
         default: ''
         required: true
 jobs:
   build:
-    name: "Build yolks:${{ github.event.inputs.image }}"
+    name: "Build image: ${{ github.event.inputs.image }}"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -28,9 +26,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - uses: docker/build-push-action@v2
         with:
-          context: ./Pterodactyl/yolks/${{ github.event.inputs.image }}
-          file: ./Pterodactyl/yolks/${{ github.event.inputs.image }}/dockerfile
-          platforms: linux/amd64,linux/arm64
+          context: ./Portainer/${{ github.event.inputs.image }}
+          file: ./Portainer/${{ github.event.inputs.image }}/dockerfile
+          platforms: linux/amd64,linux/arm64,linux/armhf
           push: true
           tags: |
-            ghcr.io/garycraft/yolks:${{ github.event.inputs.image }}
+            ghcr.io/garycraft/${{ github.event.inputs.image }}:latest
