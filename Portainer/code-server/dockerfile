@@ -36,8 +36,10 @@ RUN CURRENT_ARCH=$(dpkg --print-architecture) && \
 	CODE_DOWNLOAD_URL=https://github.com/coder/code-server/releases/download/v${CODE_RELEASE}/code-server-${CODE_RELEASE}-linux-$CURRENT_ARCH.tar.gz && \
 	echo "Downloading code-server from ${CODE_DOWNLOAD_URL}" && \
 	echo "Using Code-Release ${CODE_RELEASE}" && \
-	wget -qO- ${CODE_DOWNLOAD_URL} \
-	| tar xz -C /app/code-server --strip-components=1
+	wget -qO /tmp/code-server-${CODE_RELEASE}.tar.gz ${CODE_DOWNLOAD_URL} && \
+	mkdir -p /app/code-server && \
+	tar xzf /tmp/code-server-${CODE_RELEASE}.tar.gz -C /app/code-server --strip-components=1 && \
+	rm /tmp/code-server-${CODE_RELEASE}.tar.gz
 # Install Node 16
 RUN \
 	echo "**** install Node 16 ****" && \
