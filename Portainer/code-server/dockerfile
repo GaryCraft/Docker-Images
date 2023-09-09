@@ -6,7 +6,7 @@
 
 ## Reference from https://github.com/linuxserver/docker-code-server
 
-FROM --platform=$TARGETOS/$TARGETARCH ghcr.io/linuxserver/baseimage-ubuntu
+FROM ghcr.io/linuxserver/baseimage-ubuntu:$TARGETARCH-jammy
 
 LABEL author="GaryC" maintainer="garycraft@our-space.xyz"
 
