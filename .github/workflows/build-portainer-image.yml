@@ -9,6 +9,7 @@ on:
           - "boringproxy"
           - "frp"
           - "code-server"
+          - "php-fpm"
         required: true
 jobs:
   build:

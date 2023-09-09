@@ -1,0 +1,28 @@
+# ----------------------
+#
+#	SpaceProject - PHP-FPM
+#
+# ----------------------
+FROM --platform=$TARGETOS/$TARGETARCH php:8.2-fpm-alpine as builder
+
+LABEL author="GaryC" maintainer="garycraft@our-space.xyz"
+
+RUN apk add --no-cache \
+		$PHPIZE_DEPS \
+		icu-dev \
+		libzip-dev \
+		zip \
+		zlib-dev \
+	&& docker-php-ext-install \
+		intl \
+		zip \
+		mysqli \
+		pdo_mysql \
+	&& pecl install \
+		redis \
+	&& docker-php-ext-enable \
+		redis \
+	&& apk del --no-cache \
+		$PHPIZE_DEPS \
+	&& rm -rf /tmp/*
+	
