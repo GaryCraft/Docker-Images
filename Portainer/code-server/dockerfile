@@ -6,7 +6,7 @@
 
 ## Reference from https://github.com/linuxserver/docker-code-server
 
-FROM --platform=$TARGETOS/$TARGETARCH ubuntu:22.04
+FROM --platform=$TARGETOS/$TARGETARCH ghcr.io/linuxserver/baseimage-ubuntu
 
 LABEL author="GaryC" maintainer="garycraft@our-space.xyz"
 
