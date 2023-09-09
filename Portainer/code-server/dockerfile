@@ -26,10 +26,10 @@ RUN apt-get update && \
 	net-tools \
 	netcat
 
-# Install code-server
+# Install code-server from https://api.github.com/repos/coder/code-server/releases/latest with correct arch
 RUN CODE_RELEASE=$(curl -s https://api.github.com/repos/coder/code-server/releases/latest \
-	| jq --arg TARGETARCH "$TARGETARCH" -r '.assets[] | select(.name | contains($TARGETARCH)) | .browser_download_url' \
-	| awk -F/ '{print $NF}' | sed 's/^code-server-//' | sed 's/-linux.*gz$//') && \
+	| jq --arg TARGETARCH "$TARGETARCH" -r '.assets[] | select(.name | contains($TARGETARCH) and contains(".tar.gz")) | .browser_download_url' \
+	| head -n 1 | awk -F/ '{print $NF}' | sed 's/^code-server-//' | sed 's/-linux.*gz$//') && \
 	CODE_DOWNLOAD_URL=https://github.com/coder/code-server/releases/download/v${CODE_RELEASE}/code-server-${CODE_RELEASE}-linux-$TARGETARCH.tar.gz && \
 	echo "Downloading code-server from ${CODE_DOWNLOAD_URL}" && \
 	echo "Using Code-Release ${CODE_RELEASE}" && \
