@@ -14,48 +14,28 @@ LABEL author="GaryC" maintainer="garycraft@our-space.xyz"
 ARG DEBIAN_FRONTEND="noninteractive"
 ENV HOME="/config"
 
-# Get CodeServer
-RUN \
-	echo "**** install runtime dependencies ****" && \
-		apt-get update && \
-		apt-get install -y \
-		curl \
-		git \
-		jq \
-		libatomic1 \
-		nano \
-		net-tools \
-		netcat \
-		sudo && \
-		echo "**** install code-server ****" && \
-		CODE_RELEASE=$(curl -sX GET https://api.github.com/repos/coder/code-server/releases/latest \
-		| jq --arg TARGETARCH "$TARGETARCH" -r '.assets[] | select(.name | contains($TARGETARCH)) | .browser_download_url' \
-		| awk -F/ '{print $NF}' | sed 's/^code-server-//' | sed 's/-linux.*gz$//') && \
-		mkdir -p /app/code-server && \
-		curl -o \
-		/tmp/code-server.tar.gz -L \
-		"https://github.com/coder/code-server/releases/download/v${CODE_RELEASE}/code-server-${CODE_RELEASE}-linux-$TARGETARCH.tar.gz" && \
-		tar xf /tmp/code-server.tar.gz -C \
-		/app/code-server --strip-components=1 && \
-		echo "**** clean up ****" && \
-		apt-get clean && \
-		rm -rf \
-		/config/* \
-		/tmp/* \
-		/var/lib/apt/lists/* \
-		/var/tmp/*
+# Install runtime dependencies
+RUN apt-get update && \
+	apt-get install -y \
+	curl \
+	git \
+	jq \
+	libatomic1 \
+	nano \
+	net-tools \
+	netcat
+
+# Install code-server
+RUN CODE_RELEASE=$(curl -s https://api.github.com/repos/coder/code-server/releases/latest \
+	| jq --arg TARGETARCH "$TARGETARCH" -r '.assets[] | select(.name | contains($TARGETARCH)) | .browser_download_url' \
+	| awk -F/ '{print $NF}' | sed 's/^code-server-//' | sed 's/-linux.*gz$//') && \
+	curl -L https://github.com/coder/code-server/releases/download/v${CODE_RELEASE}/code-server-${CODE_RELEASE}-linux-$TARGETARCH.tar.gz \
+	| tar xz -C /app/code-server --strip-components=1
 # Install Node 16
 RUN \
 	echo "**** install Node 16 ****" && \
 		curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash - && \
-		apt-get install -y nodejs && \
-		echo "**** clean up ****" && \
-		apt-get clean && \
-		rm -rf \
-		/config/* \
-		/tmp/* \
-		/var/lib/apt/lists/* \
-		/var/tmp/*
+		apt-get install -y nodejs
 # Install php 8.2 and composer
 RUN \
 	echo "**** install php 8.2 and composer ****" && \
@@ -75,8 +55,9 @@ RUN \
 		php8.2-xml \
 		php8.2-zip && \
 		curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php && \
-		php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer && \
-		echo "**** clean up ****" && \
+		php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
+RUN	\
+	echo "**** clean up ****" && \
 		apt-get clean && \
 		rm -rf \
 		/config/* \
