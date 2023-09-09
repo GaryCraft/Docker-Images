@@ -47,8 +47,11 @@ RUN \
 		curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash - && \
 		apt-get install -y nodejs
 # Install php 8.2 and composer
+# Adding the ondrej/php repository
 RUN \
 	echo "**** install php 8.2 and composer ****" && \
+		apt-get install -y software-properties-common && \
+		add-apt-repository ppa:ondrej/php && \
 		apt-get update && \
 		apt-get install -y \
 		php8.2 \
