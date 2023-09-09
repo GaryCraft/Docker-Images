@@ -24,7 +24,8 @@ RUN apt-get update && \
 	libatomic1 \
 	nano \
 	net-tools \
-	netcat
+	netcat \
+	sudo
 
 # Install code-server from https://api.github.com/repos/coder/code-server/releases/latest with correct arch
 # With current architecture
