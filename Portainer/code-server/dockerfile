@@ -18,6 +18,7 @@ ENV HOME="/config"
 RUN apt-get update && \
 	apt-get install -y \
 	curl \
+	wget \
 	git \
 	jq \
 	libatomic1 \
@@ -29,7 +30,10 @@ RUN apt-get update && \
 RUN CODE_RELEASE=$(curl -s https://api.github.com/repos/coder/code-server/releases/latest \
 	| jq --arg TARGETARCH "$TARGETARCH" -r '.assets[] | select(.name | contains($TARGETARCH)) | .browser_download_url' \
 	| awk -F/ '{print $NF}' | sed 's/^code-server-//' | sed 's/-linux.*gz$//') && \
-	curl -L https://github.com/coder/code-server/releases/download/v${CODE_RELEASE}/code-server-${CODE_RELEASE}-linux-$TARGETARCH.tar.gz \
+	CODE_DOWNLOAD_URL=https://github.com/coder/code-server/releases/download/v${CODE_RELEASE}/code-server-${CODE_RELEASE}-linux-$TARGETARCH.tar.gz && \
+	echo "Downloading code-server from ${CODE_DOWNLOAD_URL}" && \
+	echo "Using Code-Release ${CODE_RELEASE}" && \
+	wget -qO- ${CODE_DOWNLOAD_URL} \
 	| tar xz -C /app/code-server --strip-components=1
 # Install Node 16
 RUN \
