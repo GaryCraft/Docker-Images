@@ -41,3 +41,7 @@ RUN CURRENT_ARCH=$(dpkg --print-architecture) && \
 
 	# Set the working directory
 	WORKDIR /app
+
+	ENTRYPOINT [ "/usr/local/bin/bun" ]
+
+	CMD [ "run" ]
