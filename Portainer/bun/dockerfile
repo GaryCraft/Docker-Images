@@ -1,0 +1,16 @@
+# ----------------------
+#
+#	SpaceProject - Bun Runner
+#
+# ----------------------
+
+FROM --platform=$TARGETOS/$TARGETARCH node:18-alpine
+
+# Install bun
+RUN npm install -g bun@latest
+
+# Set the working directory
+WORKDIR /app
+
+ENTRYPOINT [ "bun" ]
+CMD [ "run" ]

@@ -10,6 +10,7 @@ on:
           - "frp"
           - "code-server"
           - "php-fpm"
+          - "bun"
         required: true
 jobs:
   build:
