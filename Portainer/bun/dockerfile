@@ -4,7 +4,7 @@
 #
 # ----------------------
 
-FROM --platform=$TARGETOS/$TARGETARCH node:18-alpine
+FROM --platform=$TARGETOS/$TARGETARCH oven/bun:latest
 
 # Install dependencies
 RUN apk add --no-cache \
@@ -20,13 +20,5 @@ RUN apk add --no-cache \
 	wget \
 	zip
 
-# Install bun
-RUN curl https://bun.sh/install | bash
-
-RUN export BUN_INSTALL="$HOME/.bun" && export PATH="$BUN_INSTALL/bin:$PATH" 
-
 # Set the working directory
 WORKDIR /app
-
-ENTRYPOINT [ "bun" ]
-CMD [ "run" ]
