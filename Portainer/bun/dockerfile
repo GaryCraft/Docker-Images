@@ -6,8 +6,23 @@
 
 FROM --platform=$TARGETOS/$TARGETARCH node:18-alpine
 
+USER root
+# Install dependencies
+RUN apk add --no-cache \
+	bash \
+	curl \
+	git \
+	openssh-client \
+	python3 \
+	py3-pip \
+	rsync \
+	tar \
+	unzip \
+	wget \
+	zip
+
 # Install bun
-RUN npm install -g bun@latest
+RUN curl https://bun.sh/install | bash
 
 # Set the working directory
 WORKDIR /app
