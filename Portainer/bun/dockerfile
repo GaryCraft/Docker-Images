@@ -7,18 +7,17 @@
 FROM --platform=$TARGETOS/$TARGETARCH oven/bun:latest
 
 # Install dependencies
-RUN apk add --no-cache \
-	bash \
+RUN apt-get update && \
+	apt-get install -y \
 	curl \
-	git \
-	openssh-client \
-	python3 \
-	py3-pip \
-	rsync \
-	tar \
-	unzip \
 	wget \
-	zip
+	git \
+	jq \
+	libatomic1 \
+	nano \
+	net-tools \
+	netcat \
+	sudo
 
 # Set the working directory
 WORKDIR /app
