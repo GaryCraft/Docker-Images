@@ -6,7 +6,6 @@
 
 FROM --platform=$TARGETOS/$TARGETARCH node:18-alpine
 
-USER root
 # Install dependencies
 RUN apk add --no-cache \
 	bash \
@@ -23,6 +22,8 @@ RUN apk add --no-cache \
 
 # Install bun
 RUN curl https://bun.sh/install | bash
+
+RUN export BUN_INSTALL="$HOME/.bun" && export PATH="$BUN_INSTALL/bin:$PATH" 
 
 # Set the working directory
 WORKDIR /app
