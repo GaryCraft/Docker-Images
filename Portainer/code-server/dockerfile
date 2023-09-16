@@ -46,6 +46,8 @@ RUN \
 	echo "**** install Node 16 ****" && \
 		curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash - && \
 		apt-get install -y nodejs
+# Install bun
+RUN npm install -g bun
 # Install php 8.2 and composer
 # Adding the ondrej/php repository
 RUN \
