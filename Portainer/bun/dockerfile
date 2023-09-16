@@ -17,7 +17,8 @@ RUN apt-get update && \
 	nano \
 	net-tools \
 	netcat \
-	sudo
+	sudo \
+	procps
 
 # Set the working directory
 WORKDIR /app
