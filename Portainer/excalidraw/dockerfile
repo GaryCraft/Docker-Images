@@ -3,29 +3,37 @@
 #	SpaceProject - Excalidraw
 #
 # ----------------------
-FROM --platform=$TARGETOS/$TARGETARCH node:18 AS builder
+FROM --platform=$TARGETOS/$TARGETARCH node:18-bullseye AS builder
 
 LABEL author="GaryC" maintainer="garycraft@our-space.xyz"
 
 WORKDIR /build
 
-# Get the Excalidraw source code
+# Install git and jq
+RUN apt-get update && \
+	apt-get install -y git jq
+# Clean up apt-get
+RUN apt-get clean && \
+	rm -rf /var/lib/apt/lists/*
 
+# Get the Excalidraw source code
 RUN git clone https://github.com/excalidraw/excalidraw
 
-# Move package.json yarn.lock to the working directory
-RUN mv excalidraw/package.json excalidraw/yarn.lock ./
-
-# And the Excalidraw dependencies
-RUN yarn --ignore-optional --network-timeout 600000
+# Install the Excalidraw dependencies
+RUN cd excalidraw && \
+	yarn --ignore-optional --network-timeout 600000
 
 ARG NODE_ENV=production
 
-# Move everything else to the working directory (and remove the excalidraw directory)
-RUN mv excalidraw/* ./ && rm -rf excalidraw
+# Fix Some chunks are larger than 500 kBs after minification. using jq
+RUN cd excalidraw && \
+	jq '.build.chunkSizeWarningLimit = 1000000' excalidraw/package.json > excalidraw/package.json.tmp && \
+	mv excalidraw/package.json.tmp excalidraw/package.json
 
+RUN 
 # Build the Excalidraw app
-RUN yarn build
+RUN cd excalidraw && \
+	yarn build
 
 FROM --platform=$TARGETOS/$TARGETARCH nginx:1.21-alpine AS runner
 
