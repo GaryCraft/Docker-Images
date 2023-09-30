@@ -27,8 +27,8 @@ ARG NODE_ENV=production
 
 # Fix Some chunks are larger than 500 kBs after minification. using jq
 RUN cd excalidraw && \
-	jq '.build.chunkSizeWarningLimit = 1000000' excalidraw/package.json > excalidraw/package.json.tmp && \
-	mv excalidraw/package.json.tmp excalidraw/package.json
+	jq '.build.chunkSizeWarningLimit = 1000000' package.json > package.json.tmp && \
+	mv package.json.tmp package.json
 
 RUN 
 # Build the Excalidraw app
