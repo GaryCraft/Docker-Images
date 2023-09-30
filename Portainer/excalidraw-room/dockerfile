@@ -9,6 +9,9 @@ LABEL author="GaryC" maintainer="garycraft@our-space.xyz"
 
 WORKDIR /excalidraw-room
 
+# Install git
+RUN apk add --no-cache git
+
 # Get the Excalidraw Room source code
 RUN git clone https://github.com/excalidraw/excalidraw-room
 
