@@ -30,7 +30,7 @@ RUN cd excalidraw && \
 	jq '.build.chunkSizeWarningLimit = 1000000' package.json > package.json.tmp && \
 	mv package.json.tmp package.json
 
-RUN 
+
 # Build the Excalidraw app
 RUN cd excalidraw && \
 	yarn build
