@@ -11,6 +11,8 @@ on:
           - "code-server"
           - "php-fpm"
           - "bun"
+          - "excalidraw"
+          - "excalidraw-room"
         required: true
 jobs:
   build:

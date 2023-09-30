@@ -1,0 +1,37 @@
+# ----------------------
+#
+#	SpaceProject - Excalidraw
+#
+# ----------------------
+FROM --platform=$TARGETOS/$TARGETARCH node:18 AS builder
+
+LABEL author="GaryC" maintainer="garycraft@our-space.xyz"
+
+WORKDIR /build
+
+# Get the Excalidraw source code
+
+RUN git clone https://github.com/excalidraw/excalidraw
+
+# Move package.json yarn.lock to the working directory
+RUN mv excalidraw/package.json excalidraw/yarn.lock ./
+# Install yarn
+RUN npm install -g yarn
+# And the Excalidraw dependencies
+RUN yarn --ignore-optional --network-timeout 600000
+
+ARG NODE_ENV=production
+
+# Move everything else to the working directory (and remove the excalidraw directory)
+RUN mv excalidraw/* ./ && rm -rf excalidraw
+
+# Build the Excalidraw app
+RUN yarn build
+
+FROM --platform=$TARGETOS/$TARGETARCH nginx:1.21-alpine AS runner
+
+LABEL author="GaryC" maintainer="garycraft@our-space.xyz"
+
+COPY --from=builder /build/excalidraw/build /usr/share/nginx/html
+
+HEALTHCHECK CMD wget --quiet --tries=1 http://localhost || exit 1
