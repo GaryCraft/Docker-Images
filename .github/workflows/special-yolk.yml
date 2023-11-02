@@ -1,6 +1,5 @@
 name: Yolk Image armhf Platform, Manually Built
 
-
 on:
   workflow_dispatch:
     inputs:

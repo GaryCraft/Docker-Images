@@ -12,6 +12,7 @@ jobs:
         tag:
           - typescript
           - nodejs_17
+          - nodejs_18
           - typescript_canvas
           - typescript_chromium
           - dotnet_6

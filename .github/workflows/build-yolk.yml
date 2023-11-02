@@ -1,6 +1,5 @@
 name: Build Yolk manually
 
-
 on:
   workflow_dispatch:
     inputs:
