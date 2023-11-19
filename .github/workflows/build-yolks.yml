@@ -15,7 +15,7 @@ jobs:
           - nodejs_18
           - typescript_canvas
           - typescript_chromium
-          - dotnet_6
+          #- dotnet_6
           - redis_6
     steps:
       - uses: actions/checkout@v2
