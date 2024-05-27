@@ -4,6 +4,15 @@ cd /home/container
 # Make internal Docker IP address available to processes.
 export INTERNAL_IP=$(ip route get 1 | awk '{print $NF;exit}')
 
+# Check for NODE_VERSION environment variable, if not set, default to 16
+if [ -z "$NODE_VERSION" ]; then
+	NODE_VERSION=16
+fi
+# Use NVM to install the specified Node.js version and set it as the default
+nvm install $NODE_VERSION
+nvm alias default $NODE_VERSION
+nvm use $NODE_VERSION
+
 # Print Node.js Version
 echo "Node.js Version: "
 node -v

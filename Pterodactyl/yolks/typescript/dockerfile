@@ -4,7 +4,7 @@
 #
 # ----------------------
 
-FROM ghcr.io/garycraft/yolks:nodejs_18
+FROM ghcr.io/garycraft/yolks:nodejs_universal
 
 LABEL author="GaryCraft" maintainer="garycraft@our-space.xyz"
 
