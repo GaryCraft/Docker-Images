@@ -16,6 +16,8 @@ nvm use $NODE_VERSION
 # Print Node.js Version
 echo "Node.js Version: "
 node -v
+# Update NPM
+npm -g install npm@latest
 
 ## add git ending if it's not on the address
 if [[ ${GIT_ADDRESS} != *.git ]]; then

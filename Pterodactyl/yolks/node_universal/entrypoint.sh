@@ -16,6 +16,8 @@ export INTERNAL_IP
 
 # Print Node.js Version
 node -v
+# Update NPM
+npm -g install npm@latest
 
 # Replace Startup Variables
 MODIFIED_STARTUP=$(echo -e ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g')
