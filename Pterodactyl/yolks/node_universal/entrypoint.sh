@@ -3,10 +3,10 @@ cd /home/container
 
 # Check for NODE_VERSION environment variable, if not set, default to 16
 if [ -z "$NODE_VERSION" ]; then
-	NODE_VERSION=16
+	NODE_VERSION=18
 fi
 # Load NVM
-export NVM_DIR="/home/container/.nvm"
+export NVM_DIR="/usr/local/nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
 # Use NVM to install the specified Node.js version and set it as the default
