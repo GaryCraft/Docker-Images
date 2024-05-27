@@ -4,13 +4,19 @@ cd /home/container
 # Make internal Docker IP address available to processes.
 export INTERNAL_IP=$(ip route get 1 | awk '{print $NF;exit}')
 
+# If .nvm directory does not exist, copy it from /usr/local/nvm
+if [ ! -d "/home/container/.nvm" ]; then
+	cp -r /usr/local/nvm /home/container/.nvm
+fi
+
 # Check for NODE_VERSION environment variable, if not set, default to 16
 if [ -z "$NODE_VERSION" ]; then
 	NODE_VERSION=18
 fi
 # Load NVM
-export NVM_DIR="/usr/local/nvm"
+export NVM_DIR="/home/container/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
 # Use NVM to install the specified Node.js version and set it as the default
 nvm install $NODE_VERSION
 nvm alias default $NODE_VERSION
