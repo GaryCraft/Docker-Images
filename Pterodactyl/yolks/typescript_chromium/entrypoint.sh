@@ -53,6 +53,14 @@ if [ -f /home/container/package.json ]; then
   echo "Installed node_modules"
 fi
 
+# If Git submodules are present, initialize them
+if [ -f /home/container/.gitmodules ]; then
+  echo "Initializing submodules"
+  git submodule init
+  git submodule update
+  echo "Initialized submodules"
+fi
+
 #Splitting {{_ENV_STRING}}
 line="${_ENV_STRING}"
 arr=($line)

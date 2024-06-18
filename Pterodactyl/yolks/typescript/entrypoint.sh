@@ -47,6 +47,14 @@ else
   git pull && rm -rf ./dist
 fi
 
+# If Git submodules are present, initialize them
+if [ -f /home/container/.gitmodules ]; then
+  echo "Initializing submodules"
+  git submodule init
+  git submodule update
+  echo "Initialized submodules"
+fi
+
 if [ -f /home/container/package.json ]; then
   echo "Installing node_modules"
   npm install
