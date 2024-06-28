@@ -39,6 +39,13 @@ else
     GIT_ADDRESS="https://${USERNAME}:${ACCESS_TOKEN}@$(echo -e ${GIT_ADDRESS} | cut -d/ -f3-)"
 fi
 
+## If using github, login to github cli
+if [[ ${GIT_ADDRESS} == *"github.com"* ]]; then
+	echo "Logging into GitHub CLI"
+	gh auth login --with-token < <(echo -e ${ACCESS_TOKEN})
+fi
+
+
 if [ ! -d "/home/container/.git" ]; then
   echo "Repository Missing"
   exit 1
@@ -47,18 +54,18 @@ else
   git pull && rm -rf ./dist
 fi
 
-if [ -f /home/container/package.json ]; then
-  echo "Installing node_modules"
-  npm install
-  echo "Installed node_modules"
-fi
-
 # If Git submodules are present, initialize them
 if [ -f /home/container/.gitmodules ]; then
   echo "Initializing submodules"
   git submodule init
   git submodule update
   echo "Initialized submodules"
+fi
+
+if [ -f /home/container/package.json ]; then
+  echo "Installing node_modules"
+  npm install
+  echo "Installed node_modules"
 fi
 
 #Splitting {{_ENV_STRING}}

@@ -39,6 +39,13 @@ else
     GIT_ADDRESS="https://${USERNAME}:${ACCESS_TOKEN}@$(echo -e ${GIT_ADDRESS} | cut -d/ -f3-)"
 fi
 
+## If using github, login to github cli
+if [[ ${GIT_ADDRESS} == *"github.com"* ]]; then
+	echo "Logging into GitHub CLI"
+	gh auth login --with-token < <(echo -e ${ACCESS_TOKEN})
+fi
+
+
 if [ ! -d "/home/container/.git" ]; then
   echo "Repository Missing"
   exit 1
