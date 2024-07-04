@@ -9,6 +9,23 @@ if [ ! -d "/home/container/.nvm" ]; then
 	cp -r /usr/local/nvm /home/container/.nvm
 fi
 
+#Splitting {{_ENV_STRING}}
+line="${_ENV_STRING}"
+arr=($line)
+for i in "${arr[@]}"
+do
+  echo "Exporting Variable $i"
+	export $i
+done
+
+if [ ! -d /home/container/dist ]; then
+  echo "Building application"
+  npm run build
+  echo "Built application"
+fi
+
+
+
 # Check for NODE_VERSION environment variable, if not set, default to 16
 if [ -z "$NODE_VERSION" ]; then
 	NODE_VERSION=18
@@ -67,23 +84,6 @@ if [ -f /home/container/package.json ]; then
   npm install
   echo "Installed node_modules"
 fi
-
-#Splitting {{_ENV_STRING}}
-line="${_ENV_STRING}"
-arr=($line)
-for i in "${arr[@]}"
-do
-  echo "Exporting Variable $i"
-	export $i
-done
-
-if [ ! -d /home/container/dist ]; then
-  echo "Building application"
-  npm run build
-  echo "Built application"
-fi
-
-
 
 # Replace Startup Variables
 MODIFIED_STARTUP=$(echo -e ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g')
