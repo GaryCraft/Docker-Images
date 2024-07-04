@@ -1,0 +1,22 @@
+# ----------------------
+#
+#	SpaceProject - Excalidraw JSON
+#
+# ----------------------
+FROM --platform=$TARGETOS/$TARGETARCH node:18-bullseye AS builder
+
+LABEL author="GaryC" maintainer="garycraft@our-space.xyz"
+
+WORKDIR /build
+
+# Install git and jq
+RUN apt-get update && \
+	apt-get install -y git jq
+# Clean up apt-get
+RUN apt-get clean && \
+	rm -rf /var/lib/apt/lists/*
+
+# Get the Excalidraw JSON source code
+RUN git clone https://github.com/NMinhNguyen/excalidraw-json
+
+## UNFINISHED
