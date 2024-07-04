@@ -18,14 +18,6 @@ do
 	export $i
 done
 
-if [ ! -d /home/container/dist ]; then
-  echo "Building application"
-  npm run build
-  echo "Built application"
-fi
-
-
-
 # Check for NODE_VERSION environment variable, if not set, default to 16
 if [ -z "$NODE_VERSION" ]; then
 	NODE_VERSION=18
@@ -83,6 +75,12 @@ if [ -f /home/container/package.json ]; then
   echo "Installing node_modules"
   npm install
   echo "Installed node_modules"
+fi
+
+if [ ! -d /home/container/dist ]; then
+  echo "Building application"
+  npm run build
+  echo "Built application"
 fi
 
 # Replace Startup Variables
