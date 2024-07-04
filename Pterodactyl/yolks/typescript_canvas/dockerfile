@@ -10,7 +10,7 @@ LABEL author="GaryCraft" maintainer="garycraft@our-space.xyz"
 
 USER root
 RUN apt update && apt -y install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
-RUN npm install -g canvas
+RUN nvm install 20 && nvm use 20 && npm install -g canvas
 
 USER container
 ENV USER=container HOME=/home/container
