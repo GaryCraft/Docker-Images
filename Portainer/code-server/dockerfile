@@ -21,11 +21,11 @@ RUN apt-get update && \
 	wget \
 	git \
 	jq \
-	libatomic1 \
 	nano \
 	net-tools \
 	netcat \
 	sudo
+#libatomic1 \
 
 # Install code-server from https://api.github.com/repos/coder/code-server/releases/latest with correct arch
 # With current architecture
