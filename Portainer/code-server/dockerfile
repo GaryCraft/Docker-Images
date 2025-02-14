@@ -43,8 +43,8 @@ RUN CURRENT_ARCH=$(dpkg --print-architecture) && \
 	rm /tmp/code-server-${CODE_RELEASE}.tar.gz
 # Install Node 16
 RUN \
-	echo "**** install Node 18 ****" && \
-		curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - && \
+	echo "**** install Node 20 ****" && \
+		curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - && \
 		apt-get install -y nodejs
 # Install bun
 RUN npm install -g bun
