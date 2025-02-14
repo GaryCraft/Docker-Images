@@ -17,7 +17,7 @@ on:
 jobs:
   build:
     name: "Build image: ${{ github.event.inputs.image }}"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       # Setup QEMU for ARM64 Build
