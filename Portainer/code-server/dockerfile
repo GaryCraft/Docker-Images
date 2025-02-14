@@ -15,47 +15,47 @@ ARG DEBIAN_FRONTEND="noninteractive"
 ENV HOME="/config"
 
 # Install runtime dependencies
-#RUN apt-get update &&
-#	apt-get install -y \
-#		curl \
-#		wget \
-#		git \
-#		jq \
-#		net-tools \
-#		nano \
-#		netcat \
-#		libatomic1 \
-#		sudo
+RUN apt-get update && \
+	apt-get install -y \
+	wget \
+	curl \
+	jq \
+	sudo
+#	git \
+#	net-tools \
+#	nano \
+#	netcat \
+#	libatomic1 \
 
 # Install code-server from https://api.github.com/repos/coder/code-server/releases/latest with correct arch
 # With current architecture
-RUN CURRENT_ARCH=$(dpkg --print-architecture) &&
-	echo "Current architecture is ${CURRENT_ARCH}" &&
-	CODE_RELEASE=$(curl -s https://api.github.com/repos/coder/code-server/releases/latest |
-		jq --arg CURRENT_ARCH "$CURRENT_ARCH" -r '.assets[] | select(.name | contains($CURRENT_ARCH) and contains(".tar.gz")) | .browser_download_url' |
-		head -n 1 | awk -F/ '{print $NF}' | sed 's/^code-server-//' | sed 's/-linux.*gz$//') &&
-	CODE_DOWNLOAD_URL=https://github.com/coder/code-server/releases/download/v${CODE_RELEASE}/code-server-${CODE_RELEASE}-linux-$CURRENT_ARCH.tar.gz &&
-	echo "Downloading code-server from ${CODE_DOWNLOAD_URL}" &&
-	echo "Using Code-Release ${CODE_RELEASE}" &&
-	wget -qO /tmp/code-server-${CODE_RELEASE}.tar.gz ${CODE_DOWNLOAD_URL} &&
-	mkdir -p /app/code-server &&
-	tar xzf /tmp/code-server-${CODE_RELEASE}.tar.gz -C /app/code-server --strip-components=1 &&
+RUN CURRENT_ARCH=$(dpkg --print-architecture) && \
+	echo "Current architecture is ${CURRENT_ARCH}" && \
+	CODE_RELEASE=$(curl -s https://api.github.com/repos/coder/code-server/releases/latest \
+	| jq --arg CURRENT_ARCH "$CURRENT_ARCH" -r '.assets[] | select(.name | contains($CURRENT_ARCH) and contains(".tar.gz")) | .browser_download_url' \
+	| head -n 1 | awk -F/ '{print $NF}' | sed 's/^code-server-//' | sed 's/-linux.*gz$//') && \
+	CODE_DOWNLOAD_URL=https://github.com/coder/code-server/releases/download/v${CODE_RELEASE}/code-server-${CODE_RELEASE}-linux-$CURRENT_ARCH.tar.gz && \
+	echo "Downloading code-server from ${CODE_DOWNLOAD_URL}" && \
+	echo "Using Code-Release ${CODE_RELEASE}" && \
+	wget -qO /tmp/code-server-${CODE_RELEASE}.tar.gz ${CODE_DOWNLOAD_URL} && \
+	mkdir -p /app/code-server && \
+	tar xzf /tmp/code-server-${CODE_RELEASE}.tar.gz -C /app/code-server --strip-components=1 && \
 	rm /tmp/code-server-${CODE_RELEASE}.tar.gz
 # Install Node 16
 RUN \
-	echo "**** install Node 20 ****" &&
-	curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash - &&
-	apt-get install -y nodejs
+	echo "**** install Node 20 ****" && \
+		curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash - && \
+		apt-get install -y nodejs
 # Install bun
 RUN npm install -g bun
 # Install php 8.4 and composer
 # Adding the ondrej/php repository
 RUN \
-	echo "**** install php 8.4 and composer ****" &&
-	apt-get install -y software-properties-common &&
-	add-apt-repository ppa:ondrej/php &&
-	apt-get update &&
-	apt-get install -y \
+	echo "**** install php 8.4 and composer ****" && \
+		apt-get install -y software-properties-common && \
+		add-apt-repository ppa:ondrej/php && \
+		apt-get update && \
+		apt-get install -y \
 		php8.4 \
 		php8.4-common \
 		php8.4-cli \
@@ -65,13 +65,13 @@ RUN \
 		php8.4-bcmath \
 		php8.4-xml \
 		php8.4-curl \
-		php8.4-zip &&
-	curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php &&
-	php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
-RUN \
-	echo "**** clean up ****" &&
-	apt-get clean &&
-	rm -rf \
+		php8.4-zip && \
+		curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php && \
+		php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
+RUN	\
+	echo "**** clean up ****" && \
+		apt-get clean && \
+		rm -rf \
 		/config/* \
 		/tmp/* \
 		/var/lib/apt/lists/* \
@@ -81,9 +81,10 @@ RUN \
 #COPY /root /
 # https://github.com/linuxserver/docker-code-server/tree/master/root
 RUN \
-	git clone https://github.com/linuxserver/docker-code-server --depth 1 &&
-	cp -r /docker-code-server/root/* / &&
+	git clone https://github.com/linuxserver/docker-code-server --depth 1 && \
+	cp -r /docker-code-server/root/* / && \
 	rm -rf /docker-code-server
+
 
 # ports and volumes
 EXPOSE 8443
