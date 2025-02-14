@@ -20,8 +20,8 @@ RUN apt-get update && \
 	wget \
 	curl \
 	jq \
+	git \
 	sudo
-#	git \
 #	net-tools \
 #	nano \
 #	netcat \
