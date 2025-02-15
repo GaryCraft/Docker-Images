@@ -9,6 +9,7 @@ on:
           - "boringproxy"
           - "frp"
           - "code-server"
+          - "code-server-canvas"
           - "php-fpm"
           - "bun"
           - "excalidraw"

@@ -27,6 +27,10 @@ RUN apt-get update && \
 	netcat \
 	sudo
 
+# These are needed for node-canvas
+RUN apt update && \
+	apt -y install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+
 # Install code-server from https://api.github.com/repos/coder/code-server/releases/latest with correct arch
 # With current architecture
 RUN CURRENT_ARCH=$(dpkg --print-architecture) && \
@@ -49,6 +53,8 @@ RUN \
 
 # Install bun
 RUN npm install -g bun
+#Install node-canvas globally
+RUN npm install -g canvas
 
 # Let's also get NVM
 RUN mkdir -p /usr/local/nvm && chmod 777 /usr/local/nvm
