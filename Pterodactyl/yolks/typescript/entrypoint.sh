@@ -4,11 +4,6 @@ cd /home/container
 # Make internal Docker IP address available to processes.
 export INTERNAL_IP=$(ip route get 1 | awk '{print $NF;exit}')
 
-# If .nvm directory does not exist, copy it from /usr/local/nvm
-if [ ! -d "/home/container/.nvm" ]; then
-	cp -r /usr/local/nvm /home/container/.nvm
-fi
-
 #Splitting {{_ENV_STRING}}
 line="${_ENV_STRING}"
 arr=($line)
@@ -58,6 +53,12 @@ fi
 if [ -z "$NODE_VERSION" ]; then
 	NODE_VERSION=18
 fi
+
+# If .nvm directory does not exist, copy it from /usr/local/nvm
+if [ ! -d "/home/container/.nvm" ]; then
+	cp -r /usr/local/nvm /home/container/.nvm
+fi
+
 # Load NVM
 export NVM_DIR="/home/container/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
