@@ -26,6 +26,7 @@ fi
 export NVM_DIR="/home/container/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
+
 # Use NVM to install the specified Node.js version and set it as the default
 nvm install $NODE_VERSION
 nvm alias default $NODE_VERSION
@@ -57,7 +58,9 @@ fi
 
 if [ ! -d "/home/container/.git" ]; then
   echo "Repository Missing"
-  exit 1
+  echo "Cloning repository..."
+  git clone ${GIT_ADDRESS} /home/container
+  echo "Cloned repository"
 else
   echo "Updating repository..."
   git pull && rm -rf ./dist
