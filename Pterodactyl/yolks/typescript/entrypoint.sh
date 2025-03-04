@@ -18,26 +18,6 @@ do
 	export $i
 done
 
-# Check for NODE_VERSION environment variable, if not set, default to 16
-if [ -z "$NODE_VERSION" ]; then
-	NODE_VERSION=18
-fi
-# Load NVM
-export NVM_DIR="/home/container/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-
-
-# Use NVM to install the specified Node.js version and set it as the default
-nvm install $NODE_VERSION
-nvm alias default $NODE_VERSION
-nvm use $NODE_VERSION
-
-# Print Node.js Version
-echo "Node.js Version: "
-node -v
-# Update NPM
-npm -g install npm@latest
-
 ## add git ending if it's not on the address
 if [[ ${GIT_ADDRESS} != *.git ]]; then
     GIT_ADDRESS=${GIT_ADDRESS}.git
@@ -73,6 +53,25 @@ if [ -f /home/container/.gitmodules ]; then
   git submodule update
   echo "Initialized submodules"
 fi
+
+# Check for NODE_VERSION environment variable, if not set, default to 16
+if [ -z "$NODE_VERSION" ]; then
+	NODE_VERSION=18
+fi
+# Load NVM
+export NVM_DIR="/home/container/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+# Use NVM to install the specified Node.js version and set it as the default
+nvm install $NODE_VERSION
+nvm alias default $NODE_VERSION
+nvm use $NODE_VERSION
+
+# Print Node.js Version
+echo "Node.js Version: "
+node -v
+# Update NPM
+npm -g install npm@latest
 
 if [ -f /home/container/package.json ]; then
   echo "Installing node_modules"
