@@ -21,7 +21,7 @@ fi
 if [ -z "${USERNAME}" ] && [ -z "${ACCESS_TOKEN}" ]; then
     echo -e "using anon api call"
 else
-    GIT_ADDRESS="https://${USERNAME}:${ACCESS_TOKEN}@$(echo -e ${GIT_ADDRESS} | cut -d/ -f3-)"
+    GIT_ADDRESS="https://${USERNAME}:${ACCESS_TOKEN}@${GIT_ADDRESS#*://}"
 fi
 
 ## If using github, login to github cli
