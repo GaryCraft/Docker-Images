@@ -25,10 +25,10 @@ else
 fi
 
 ## If using github, login to github cli
-if [[ ${GIT_ADDRESS} == *"github.com"* ]]; then
-	echo "Logging into GitHub CLI"
-	gh auth login --with-token < <(echo -e ${ACCESS_TOKEN})
-fi
+#if [[ ${GIT_ADDRESS} == *"github.com"* ]]; then
+#	echo "Logging into GitHub CLI"
+#	gh auth login --with-token < <(echo -e ${ACCESS_TOKEN})
+#fi
 
 
 if [ ! -d "/home/container/.git" ]; then
