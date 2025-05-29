@@ -34,11 +34,24 @@ fi
 if [ ! -d "/home/container/.git" ]; then
   echo "Repository Missing"
   echo "Cloning repository..."
-  git clone ${GIT_ADDRESS} /home/container
+  if [ -z "$BRANCH" ]; then
+    echo "Using default branch"
+    git clone ${GIT_ADDRESS} /home/container
+  else
+    echo "Using branch: ${BRANCH}"
+    git clone -b ${BRANCH} ${GIT_ADDRESS} /home/container
+  fi
   echo "Cloned repository"
 else
   echo "Updating repository..."
-  git pull && rm -rf ./dist
+  if [ -z "$BRANCH" ]; then
+    git pull && rm -rf ./dist
+  else
+    echo "Checking out branch: ${BRANCH}"
+    git fetch
+    git checkout ${BRANCH}
+    git pull && rm -rf ./dist
+  fi
 fi
 
 # If Git submodules are present, initialize them
