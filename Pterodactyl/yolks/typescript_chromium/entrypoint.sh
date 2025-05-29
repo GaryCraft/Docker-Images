@@ -4,11 +4,6 @@ cd /home/container
 # Make internal Docker IP address available to processes.
 export INTERNAL_IP=$(ip route get 1 | awk '{print $NF;exit}')
 
-# If .nvm directory does not exist, copy it from /usr/local/nvm
-if [ ! -d "/home/container/.nvm" ]; then
-	cp -r /usr/local/nvm /home/container/.nvm
-fi
-
 #Splitting {{_ENV_STRING}}
 line="${_ENV_STRING}"
 arr=($line)
@@ -18,10 +13,52 @@ do
 	export $i
 done
 
+## add git ending if it's not on the address
+if [[ ${GIT_ADDRESS} != *.git ]]; then
+    GIT_ADDRESS=${GIT_ADDRESS}.git
+fi
+
+if [ -z "${USERNAME}" ] && [ -z "${ACCESS_TOKEN}" ]; then
+    echo -e "using anon api call"
+else
+    GIT_ADDRESS="https://${USERNAME}:${ACCESS_TOKEN}@${GIT_ADDRESS#*://}"
+fi
+
+## If using github, login to github cli
+#if [[ ${GIT_ADDRESS} == *"github.com"* ]]; then
+#	echo "Logging into GitHub CLI"
+#	gh auth login --with-token < <(echo -e ${ACCESS_TOKEN})
+#fi
+
+
+if [ ! -d "/home/container/.git" ]; then
+  echo "Repository Missing"
+  echo "Cloning repository..."
+  git clone ${GIT_ADDRESS} /home/container
+  echo "Cloned repository"
+else
+  echo "Updating repository..."
+  git pull && rm -rf ./dist
+fi
+
+# If Git submodules are present, initialize them
+if [ -f /home/container/.gitmodules ]; then
+  echo "Initializing submodules"
+  git submodule init
+  git submodule update
+  echo "Initialized submodules"
+fi
+
 # Check for NODE_VERSION environment variable, if not set, default to 16
 if [ -z "$NODE_VERSION" ]; then
 	NODE_VERSION=18
 fi
+
+# If .nvm directory does not exist, copy it from /usr/local/nvm
+if [ ! -d "/home/container/.nvm" ]; then
+	cp -r /usr/local/nvm /home/container/.nvm
+fi
+
 # Load NVM
 export NVM_DIR="/home/container/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
@@ -36,40 +73,6 @@ echo "Node.js Version: "
 node -v
 # Update NPM
 npm -g install npm@latest
-
-## add git ending if it's not on the address
-if [[ ${GIT_ADDRESS} != *.git ]]; then
-    GIT_ADDRESS=${GIT_ADDRESS}.git
-fi
-
-if [ -z "${USERNAME}" ] && [ -z "${ACCESS_TOKEN}" ]; then
-    echo -e "using anon api call"
-else
-    GIT_ADDRESS="https://${USERNAME}:${ACCESS_TOKEN}@$(echo -e ${GIT_ADDRESS} | cut -d/ -f3-)"
-fi
-
-## If using github, login to github cli
-if [[ ${GIT_ADDRESS} == *"github.com"* ]]; then
-	echo "Logging into GitHub CLI"
-	gh auth login --with-token < <(echo -e ${ACCESS_TOKEN})
-fi
-
-
-if [ ! -d "/home/container/.git" ]; then
-  echo "Repository Missing"
-  exit 1
-else
-  echo "Updating repository..."
-  git pull && rm -rf ./dist
-fi
-
-# If Git submodules are present, initialize them
-if [ -f /home/container/.gitmodules ]; then
-  echo "Initializing submodules"
-  git submodule init
-  git submodule update
-  echo "Initialized submodules"
-fi
 
 if [ -f /home/container/package.json ]; then
   echo "Installing node_modules"
