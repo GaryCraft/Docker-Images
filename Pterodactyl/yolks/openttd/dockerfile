@@ -4,6 +4,8 @@ LABEL maintainer=garycraft@our-space.xyz
 USER root
 
 ADD entrypoint.sh /usr/local/bin/entrypoint
+RUN chmod +x /usr/local/bin/entrypoint && sed -i 's/\r$//' /usr/local/bin/entrypoint
+
 
 RUN mkdir -p /home/container && useradd -d /home/container -u 1000 container
 
