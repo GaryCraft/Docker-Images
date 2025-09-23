@@ -1,4 +1,4 @@
-FROM ghcr.io/ropenttd/openttd:15.0-beta2
+FROM ghcr.io/ropenttd/openttd:latest
 LABEL maintainer=garycraft@our-space.xyz
 
 USER root
