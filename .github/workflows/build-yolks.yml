@@ -18,6 +18,7 @@ jobs:
           - typescript_chromium
           #- dotnet_6
           - redis_6
+          - openttd
     steps:
       - uses: actions/checkout@v2
       # Setup QEMU for ARM64 Build
