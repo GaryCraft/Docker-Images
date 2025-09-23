@@ -1,9 +1,9 @@
 FROM ghcr.io/ropenttd/openttd:15.0-beta2
-LABEL maintainer garycraft@our-space.xyz
+LABEL maintainer=garycraft@our-space.xyz
 
 ADD entrypoint.sh /usr/local/bin/entrypoint
 
-RUN mkdir -p /home/container && useradd -d /home/container -u 911 -s /bin/false container
+RUN mkdir -p /home/container && useradd -d /home/container -u 1000 container
 
 RUN chown -R container:container /home/container /app
 WORKDIR /home/container

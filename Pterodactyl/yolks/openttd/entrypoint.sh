@@ -1,4 +1,5 @@
 #!/bin/sh
+# GPLv3 ropenttd https://github.com/ropenttd/docker_openttd
 
 # This script is based fairly heavily off bateau84/openttd's. Thanks, man!
 
