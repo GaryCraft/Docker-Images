@@ -3,10 +3,12 @@ LABEL maintainer garycraft@our-space.xyz
 
 ADD entrypoint.sh /usr/local/bin/entrypoint
 
-RUN chown -R openttd:openttd /config /app
+RUN mkdir -p /home/container && useradd -d /home/container -u 911 -s /bin/false container
+
+RUN chown -R container:container /home/container /app
 WORKDIR /home/container
 ENV XDG_DATA_HOME=/home/container
 ENV PATH="$PATH:/app"
 
-USER openttd
+USER container
 CMD [ "/usr/local/bin/entrypoint" ]
