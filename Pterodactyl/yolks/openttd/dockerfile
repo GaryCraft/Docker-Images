@@ -1,6 +1,8 @@
 FROM ghcr.io/ropenttd/openttd:15.0-beta2
 LABEL maintainer=garycraft@our-space.xyz
 
+USER root
+
 ADD entrypoint.sh /usr/local/bin/entrypoint
 
 RUN mkdir -p /home/container && useradd -d /home/container -u 1000 container
