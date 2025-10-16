@@ -13,6 +13,7 @@ jobs:
           - typescript
           - nodejs_17
           - nodejs_18
+          - nodejs_22
           - nodejs_universal
           - typescript_canvas
           - typescript_chromium
