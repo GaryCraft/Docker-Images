@@ -1,4 +1,4 @@
-FROM        --platform=$TARGETOS/$TARGETARCH node:22-bullseye-slim
+FROM        --platform=$TARGETOS/$TARGETARCH node:24-bullseye-slim
 
 LABEL       author="GaryC" maintainer="garycraft@our-space.xyz"
 
