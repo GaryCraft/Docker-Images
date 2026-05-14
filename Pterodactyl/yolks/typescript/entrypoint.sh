@@ -86,6 +86,12 @@ fi
 
 GIT_MODE="$(to_lower "${GIT_MODE:-repo}")"
 ALWAYS_INSTALL_AND_BUILD="${ALWAYS_INSTALL_AND_BUILD:-false}"
+# Default BRANCH_TAG depending on GIT_MODE: 'main' for repo, 'latest' for release
+if [ "${GIT_MODE}" = "release" ]; then
+  BRANCH_TAG="${BRANCH_TAG:-${BRANCH:-latest}}"
+else
+  BRANCH_TAG="${BRANCH_TAG:-${BRANCH:-main}}"
+fi
 SKIP_INSTALL_AND_BUILD=0
 SOURCE_CHANGED=0
 
@@ -104,7 +110,6 @@ fi
 
 
 if [ "${GIT_MODE}" = "release" ]; then
-  RELEASE_TAG="${RELEASE_TAG:-latest}"
   RELEASE_TMP_DIR="/home/container/.release_tmp"
   RELEASE_ARCHIVE="${RELEASE_TMP_DIR}/release.tar.gz"
 
@@ -120,23 +125,22 @@ if [ "${GIT_MODE}" = "release" ]; then
 
   echo "Extracted repo path: ${REPO_PATH}"
 
-  if [ "${RELEASE_TAG}" = "latest" ]; then
-    RELEASE_TAG="$(get_latest_release_tag "${REPO_PATH}")"
-    if [ -z "${RELEASE_TAG}" ]; then
+  if [ "${BRANCH_TAG}" = "latest" ]; then
+    BRANCH_TAG="$(get_latest_release_tag "${REPO_PATH}")"
+    if [ -z "${BRANCH_TAG}" ]; then
       echo "Unable to resolve latest release tag for ${REPO_PATH}"
       exit 1
     fi
-    echo "Resolved latest release tag: ${RELEASE_TAG}"
+    echo "Resolved latest release tag: ${BRANCH_TAG}"
   fi
 
-  ENCODED_TAG="$(url_encode "${RELEASE_TAG}")"
-  echo "Release tag: ${RELEASE_TAG}"
+  echo "Release tag: ${BRANCH_TAG}"
 
   echo "Downloading release archive from GitHub API"
   mkdir -p "${RELEASE_TMP_DIR}"
 
   # Get the release asset download URL from GitHub releases
-  RELEASE_ASSET_URL="$(get_release_asset_url "${REPO_PATH}" "${RELEASE_TAG}")"
+  RELEASE_ASSET_URL="$(get_release_asset_url "${REPO_PATH}" "${BRANCH_TAG}")"
   
   if [ -z "${RELEASE_ASSET_URL}" ]; then
     echo "Failed to find release assets for ${REPO_PATH}/${RELEASE_TAG}"
@@ -183,12 +187,12 @@ else
   if [ ! -d "/home/container/.git" ]; then
     echo "Repository Missing"
     echo "Cloning repository..."
-    if [ -z "$BRANCH" ]; then
+    if [ "${BRANCH_TAG}" = "latest" ]; then
       echo "Using default branch"
       git clone ${AUTH_GIT_ADDRESS} /home/container
     else
-      echo "Using branch: ${BRANCH}"
-      git clone -b ${BRANCH} ${AUTH_GIT_ADDRESS} /home/container
+      echo "Using branch: ${BRANCH_TAG}"
+      git clone -b ${BRANCH_TAG} ${AUTH_GIT_ADDRESS} /home/container
     fi
     SOURCE_CHANGED=1
     echo "Cloned repository"
@@ -196,12 +200,12 @@ else
     echo "Updating repository..."
     PREVIOUS_COMMIT=$(git rev-parse HEAD 2>/dev/null || true)
 
-    if [ -z "$BRANCH" ]; then
+    if [ "${BRANCH_TAG}" = "latest" ]; then
       git pull
     else
-      echo "Checking out branch: ${BRANCH}"
+      echo "Checking out branch: ${BRANCH_TAG}"
       git fetch
-      git checkout ${BRANCH}
+      git checkout ${BRANCH_TAG}
       git pull
     fi
 
