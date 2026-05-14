@@ -111,15 +111,24 @@ if [ "${GIT_MODE}" = "release" ]; then
   fi
 
   ENCODED_TAG="$(url_encode "${RELEASE_TAG}")"
-  RELEASE_URL="https://github.com/${REPO_PATH}/archive/refs/tags/${ENCODED_TAG}.tar.gz"
-  echo "Release archive URL: ${RELEASE_URL}"
+  echo "Release tag: ${RELEASE_TAG}"
 
-  echo "Downloading release archive from ${RELEASE_URL}"
+  echo "Downloading release archive from GitHub API"
   mkdir -p "${RELEASE_TMP_DIR}"
 
-  if ! curl -fL "${RELEASE_URL}" -o "${RELEASE_ARCHIVE}"; then
-    echo "Failed to download release archive"
-    exit 1
+  # Use GitHub API tarball endpoint which works for both git tags and release tags
+  RELEASE_URL="https://api.github.com/repos/${REPO_PATH}/tarball/${RELEASE_TAG}"
+  
+  if [ -n "${ACCESS_TOKEN}" ]; then
+    if ! curl -fL -H "Authorization: Bearer ${ACCESS_TOKEN}" "${RELEASE_URL}" -o "${RELEASE_ARCHIVE}"; then
+      echo "Failed to download release archive"
+      exit 1
+    fi
+  else
+    if ! curl -fL "${RELEASE_URL}" -o "${RELEASE_ARCHIVE}"; then
+      echo "Failed to download release archive"
+      exit 1
+    fi
   fi
 
   clean_container_dir
