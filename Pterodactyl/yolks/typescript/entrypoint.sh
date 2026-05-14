@@ -68,6 +68,7 @@ fi
 
 GIT_MODE="$(to_lower "${GIT_MODE:-repo}")"
 ALWAYS_INSTALL_AND_BUILD="${ALWAYS_INSTALL_AND_BUILD:-false}"
+SKIP_INSTALL_AND_BUILD=0
 SOURCE_CHANGED=0
 
 if [ -z "${USERNAME}" ] && [ -z "${ACCESS_TOKEN}" ]; then
@@ -151,7 +152,7 @@ if [ "${GIT_MODE}" = "release" ]; then
   cp -a "${RELEASE_TMP_DIR}/${RELEASE_DIR}/." /home/container/
   rm -rf "${RELEASE_TMP_DIR}"
 
-  SOURCE_CHANGED=1
+  SKIP_INSTALL_AND_BUILD=1
   echo "Release downloaded and extracted"
 else
   if [ ! -d "/home/container/.git" ]; then
@@ -224,20 +225,24 @@ node -v
 npm -g install npm@latest
 
 if [ -f /home/container/package.json ]; then
-  if is_true "${ALWAYS_INSTALL_AND_BUILD}" || [ "${SOURCE_CHANGED}" -eq 1 ] || [ ! -d /home/container/node_modules ]; then
-    echo "Installing node_modules"
-    npm install
-    echo "Installed node_modules"
-  else
-    echo "Skipping npm install (no source changes detected)"
-  fi
+  if [ "${SKIP_INSTALL_AND_BUILD}" -eq 0 ]; then
+    if is_true "${ALWAYS_INSTALL_AND_BUILD}" || [ "${SOURCE_CHANGED}" -eq 1 ] || [ ! -d /home/container/node_modules ]; then
+      echo "Installing node_modules"
+      npm install
+      echo "Installed node_modules"
+    else
+      echo "Skipping npm install (no source changes detected)"
+    fi
 
-  if is_true "${ALWAYS_INSTALL_AND_BUILD}" || [ "${SOURCE_CHANGED}" -eq 1 ] || [ ! -d /home/container/dist ]; then
-    echo "Building application"
-    npm run build
-    echo "Built application"
+    if is_true "${ALWAYS_INSTALL_AND_BUILD}" || [ "${SOURCE_CHANGED}" -eq 1 ] || [ ! -d /home/container/dist ]; then
+      echo "Building application"
+      npm run build
+      echo "Built application"
+    else
+      echo "Skipping npm build (no source changes detected)"
+    fi
   else
-    echo "Skipping npm build (no source changes detected)"
+    echo "Skipping npm install and build (release mode)"
   fi
 fi
 
