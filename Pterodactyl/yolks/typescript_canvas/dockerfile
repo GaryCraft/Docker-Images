@@ -15,8 +15,6 @@ RUN apt update && apt -y install build-essential libcairo2-dev libpango1.0-dev l
 USER container
 ENV USER=container HOME=/home/container
 WORKDIR /home/container
-RUN nvm install 20 && nvm use 20 && npm install -g canvas
-
-COPY ./entrypoint.sh /entrypoint.sh
+RUN nvm install 24 && nvm use 24 && npm install -g canvas
 
 CMD ["/bin/bash", "/entrypoint.sh"]
