@@ -49,6 +49,24 @@ url_encode() {
   fi
 }
 
+get_release_asset_url() {
+  local repo_path="$1"
+  local release_tag="$2"
+  local asset_pattern="${3:-.tar.gz|.zip}"
+  local api_url="https://api.github.com/repos/${repo_path}/releases/tags/${release_tag}"
+  local auth_header=""
+
+  if [ -n "${ACCESS_TOKEN}" ]; then
+    auth_header="Authorization: Bearer ${ACCESS_TOKEN}"
+  fi
+
+  if [ -n "${auth_header}" ]; then
+    curl -fsSL -H "${auth_header}" "${api_url}" | grep -oP '"browser_download_url": "\K[^"]+' | head -n1
+  else
+    curl -fsSL "${api_url}" | grep -oP '"browser_download_url": "\K[^"]+' | head -n1
+  fi
+}
+
 # Make internal Docker IP address available to processes.
 export INTERNAL_IP=$(ip route get 1 | awk '{print $NF;exit}')
 
@@ -117,17 +135,24 @@ if [ "${GIT_MODE}" = "release" ]; then
   echo "Downloading release archive from GitHub API"
   mkdir -p "${RELEASE_TMP_DIR}"
 
-  # Use GitHub API tarball endpoint which works for both git tags and release tags
-  RELEASE_URL="https://api.github.com/repos/${REPO_PATH}/tarball/${RELEASE_TAG}"
+  # Get the release asset download URL from GitHub releases
+  RELEASE_ASSET_URL="$(get_release_asset_url "${REPO_PATH}" "${RELEASE_TAG}")"
+  
+  if [ -z "${RELEASE_ASSET_URL}" ]; then
+    echo "Failed to find release assets for ${REPO_PATH}/${RELEASE_TAG}"
+    exit 1
+  fi
+  
+  echo "Downloading from: ${RELEASE_ASSET_URL}"
   
   if [ -n "${ACCESS_TOKEN}" ]; then
-    if ! curl -fL -H "Authorization: Bearer ${ACCESS_TOKEN}" "${RELEASE_URL}" -o "${RELEASE_ARCHIVE}"; then
-      echo "Failed to download release archive"
+    if ! curl -fL -H "Authorization: Bearer ${ACCESS_TOKEN}" "${RELEASE_ASSET_URL}" -o "${RELEASE_ARCHIVE}"; then
+      echo "Failed to download release asset"
       exit 1
     fi
   else
-    if ! curl -fL "${RELEASE_URL}" -o "${RELEASE_ARCHIVE}"; then
-      echo "Failed to download release archive"
+    if ! curl -fL "${RELEASE_ASSET_URL}" -o "${RELEASE_ARCHIVE}"; then
+      echo "Failed to download release asset"
       exit 1
     fi
   fi
