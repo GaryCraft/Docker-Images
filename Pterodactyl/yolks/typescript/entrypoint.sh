@@ -36,6 +36,19 @@ get_latest_release_tag() {
   fi
 }
 
+url_encode() {
+  local string="$1"
+  if command -v jq &> /dev/null; then
+    printf %s "$string" | jq -sRr @uri
+  else
+    # Pure bash fallback for URL encoding
+    local i="${#string}"
+    while [ $((i -= 1)) -ge 0 ]; do
+      printf '%s' "${string:$i:1}" | sed 's/[^a-zA-Z0-9._-]/\\x&/g' | tr \\ %
+    done
+  fi
+}
+
 # Make internal Docker IP address available to processes.
 export INTERNAL_IP=$(ip route get 1 | awk '{print $NF;exit}')
 
@@ -86,6 +99,8 @@ if [ "${GIT_MODE}" = "release" ]; then
     exit 1
   fi
 
+  echo "Extracted repo path: ${REPO_PATH}"
+
   if [ "${RELEASE_TAG}" = "latest" ]; then
     RELEASE_TAG="$(get_latest_release_tag "${REPO_PATH}")"
     if [ -z "${RELEASE_TAG}" ]; then
@@ -93,10 +108,11 @@ if [ "${GIT_MODE}" = "release" ]; then
       exit 1
     fi
     echo "Resolved latest release tag: ${RELEASE_TAG}"
-    RELEASE_URL="https://github.com/${REPO_PATH}/archive/refs/tags/${RELEASE_TAG}.tar.gz"
-  else
-    RELEASE_URL="https://github.com/${REPO_PATH}/archive/refs/tags/${RELEASE_TAG}.tar.gz"
   fi
+
+  ENCODED_TAG="$(url_encode "${RELEASE_TAG}")"
+  RELEASE_URL="https://github.com/${REPO_PATH}/archive/refs/tags/${ENCODED_TAG}.tar.gz"
+  echo "Release archive URL: ${RELEASE_URL}"
 
   echo "Downloading release archive from ${RELEASE_URL}"
   mkdir -p "${RELEASE_TMP_DIR}"
