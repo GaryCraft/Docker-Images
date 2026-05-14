@@ -16,7 +16,24 @@ clean_container_dir() {
   find /home/container -mindepth 1 -maxdepth 1 \
     ! -name '.nvm' \
     ! -name '.cache' \
+    ! -name '.release_tmp' \
     -exec rm -rf {} +
+}
+
+get_latest_release_tag() {
+  local repo_path="$1"
+  local api_url="https://api.github.com/repos/${repo_path}/releases/latest"
+  local auth_header=""
+
+  if [ -n "${ACCESS_TOKEN}" ]; then
+    auth_header="Authorization: Bearer ${ACCESS_TOKEN}"
+  fi
+
+  if [ -n "${auth_header}" ]; then
+    curl -fsSL -H "${auth_header}" "${api_url}" | sed -n 's/.*"tag_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -n1
+  else
+    curl -fsSL "${api_url}" | sed -n 's/.*"tag_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -n1
+  fi
 }
 
 # Make internal Docker IP address available to processes.
@@ -56,7 +73,8 @@ fi
 
 if [ "${GIT_MODE}" = "release" ]; then
   RELEASE_TAG="${RELEASE_TAG:-latest}"
-  RELEASE_ARCHIVE="/tmp/release.tar.gz"
+  RELEASE_TMP_DIR="/home/container/.release_tmp"
+  RELEASE_ARCHIVE="${RELEASE_TMP_DIR}/release.tar.gz"
 
   REPO_PATH="${GIT_ADDRESS#*://}"
   REPO_PATH="${REPO_PATH#*@}"
@@ -69,21 +87,44 @@ if [ "${GIT_MODE}" = "release" ]; then
   fi
 
   if [ "${RELEASE_TAG}" = "latest" ]; then
-    RELEASE_URL="https://github.com/${REPO_PATH}/archive/refs/tags/$(curl -fsSL https://api.github.com/repos/${REPO_PATH}/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/').tar.gz"
+    RELEASE_TAG="$(get_latest_release_tag "${REPO_PATH}")"
+    if [ -z "${RELEASE_TAG}" ]; then
+      echo "Unable to resolve latest release tag for ${REPO_PATH}"
+      exit 1
+    fi
+    echo "Resolved latest release tag: ${RELEASE_TAG}"
+    RELEASE_URL="https://github.com/${REPO_PATH}/archive/refs/tags/${RELEASE_TAG}.tar.gz"
   else
     RELEASE_URL="https://github.com/${REPO_PATH}/archive/refs/tags/${RELEASE_TAG}.tar.gz"
   fi
 
   echo "Downloading release archive from ${RELEASE_URL}"
-  curl -fL "${RELEASE_URL}" -o "${RELEASE_ARCHIVE}"
+  mkdir -p "${RELEASE_TMP_DIR}"
+
+  if ! curl -fL "${RELEASE_URL}" -o "${RELEASE_ARCHIVE}"; then
+    echo "Failed to download release archive"
+    exit 1
+  fi
 
   clean_container_dir
+  mkdir -p "${RELEASE_TMP_DIR}"
 
   echo "Extracting release archive"
-  tar -xzf "${RELEASE_ARCHIVE}" -C /tmp
+  if ! tar -xzf "${RELEASE_ARCHIVE}" -C "${RELEASE_TMP_DIR}"; then
+    echo "Failed to extract release archive"
+    rm -f "${RELEASE_ARCHIVE}"
+    exit 1
+  fi
+
   RELEASE_DIR="$(tar -tzf "${RELEASE_ARCHIVE}" | head -1 | cut -d/ -f1)"
-  cp -a "/tmp/${RELEASE_DIR}/." /home/container/
-  rm -rf "/tmp/${RELEASE_DIR}" "${RELEASE_ARCHIVE}"
+  if [ -z "${RELEASE_DIR}" ] || [ ! -d "${RELEASE_TMP_DIR}/${RELEASE_DIR}" ]; then
+    echo "Invalid extracted release directory"
+    rm -f "${RELEASE_ARCHIVE}"
+    exit 1
+  fi
+
+  cp -a "${RELEASE_TMP_DIR}/${RELEASE_DIR}/." /home/container/
+  rm -rf "${RELEASE_TMP_DIR}"
 
   SOURCE_CHANGED=1
   echo "Release downloaded and extracted"
