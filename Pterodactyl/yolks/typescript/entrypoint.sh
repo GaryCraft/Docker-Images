@@ -52,7 +52,7 @@ url_encode() {
 get_release_asset_url() {
   local repo_path="$1"
   local release_tag="$2"
-  local asset_pattern="${3:-.tar.gz|.zip}"
+  local asset_pattern="${3:-\\.tar\\.gz$|\\.zip$}"
   local api_url="https://api.github.com/repos/${repo_path}/releases/tags/${release_tag}"
   local auth_header=""
 
@@ -60,10 +60,18 @@ get_release_asset_url() {
     auth_header="Authorization: Bearer ${ACCESS_TOKEN}"
   fi
 
-  if [ -n "${auth_header}" ]; then
-    curl -fsSL -H "${auth_header}" "${api_url}" | grep -oP '"browser_download_url": "\K[^"]+' | head -n1
+  if command -v jq &> /dev/null; then
+    if [ -n "${auth_header}" ]; then
+      curl -fsSL -H "${auth_header}" "${api_url}" | jq -r --arg pattern "${asset_pattern}" '.assets[] | select(.name | test($pattern)) | .url' | head -n1
+    else
+      curl -fsSL "${api_url}" | jq -r --arg pattern "${asset_pattern}" '.assets[] | select(.name | test($pattern)) | .url' | head -n1
+    fi
   else
-    curl -fsSL "${api_url}" | grep -oP '"browser_download_url": "\K[^"]+' | head -n1
+    if [ -n "${auth_header}" ]; then
+      curl -fsSL -H "${auth_header}" "${api_url}" | grep -oP '"url": "\Khttps://api\.github\.com/repos/[^"]+/releases/assets/[^"]+' | head -n1
+    else
+      curl -fsSL "${api_url}" | grep -oP '"url": "\Khttps://api\.github\.com/repos/[^"]+/releases/assets/[^"]+' | head -n1
+    fi
   fi
 }
 
@@ -143,19 +151,19 @@ if [ "${GIT_MODE}" = "release" ]; then
   RELEASE_ASSET_URL="$(get_release_asset_url "${REPO_PATH}" "${BRANCH_TAG}")"
   
   if [ -z "${RELEASE_ASSET_URL}" ]; then
-    echo "Failed to find release assets for ${REPO_PATH}/${RELEASE_TAG}"
+    echo "Failed to find release assets for ${REPO_PATH}/${BRANCH_TAG}"
     exit 1
   fi
   
   echo "Downloading from: ${RELEASE_ASSET_URL}"
   
   if [ -n "${ACCESS_TOKEN}" ]; then
-    if ! curl -fL -H "Authorization: Bearer ${ACCESS_TOKEN}" "${RELEASE_ASSET_URL}" -o "${RELEASE_ARCHIVE}"; then
+    if ! curl -fL -H "Authorization: Bearer ${ACCESS_TOKEN}" -H "Accept: application/octet-stream" "${RELEASE_ASSET_URL}" -o "${RELEASE_ARCHIVE}"; then
       echo "Failed to download release asset"
       exit 1
     fi
   else
-    if ! curl -fL "${RELEASE_ASSET_URL}" -o "${RELEASE_ARCHIVE}"; then
+    if ! curl -fL -H "Accept: application/octet-stream" "${RELEASE_ASSET_URL}" -o "${RELEASE_ARCHIVE}"; then
       echo "Failed to download release asset"
       exit 1
     fi
